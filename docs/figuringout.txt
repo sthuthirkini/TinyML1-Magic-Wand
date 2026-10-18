@@ -1,0 +1,88 @@
+inspecting data explorer
+plots of all data test and train
+
+case1
+w-test
+circle-train
+next to each other
+w-cleearly performed, but less extreme peaks
+w classified as circle
+
+Model seems to be confidently wrong: 0 or 100 confidence only
+- Circle: Only 5 of 10 are correctly recognized. Four become UNCERTAIN, and one is predicted as Z.
+- W: Six of 10 are correct. Two are mistaken for Circle, and two are UNCERTAIN.
+- Z: Seven of 10 are correct. One is mistaken for Circle, and two are UNCERTAIN.
+
+looked at thresholds of circle classife=ied as uncertain.00, the conclusion about the highest score stays the same.
+Notice the pattern:
+- The first Circle sample has a top score of 51%.
+- The second Circle sample actually leans toward Z (47%).
+- The third Circle sample leans slightly toward W (48%).
+- The W sample leans toward W (53%), but still gets marked uncertain.
+So the model is sometimes leaning toward the right class without crossing whatever threshold determines a confident prediction. Other times, it leans toward the wrong class.
+2. What this tells us
+There are two different problems to distinguish:
+1. Threshold problem: The model's top score is reasonable, but the uncertainty threshold rejects it.
+2. Classification problem: The model assigns the highest score to the wrong gesture, as with the Circle sample leaning toward Z.
+
+//claude
+If the test set gives about 50% for Circle while validation gives 87.5%, the model isn’t failing on its own. 
+It does well on data resembling what it trained on and falls apart on data that doesn’t.
+Validation is a random 20% slice of the same recording sessions, so it’s in optimistic
+
+In Circle training samples
+
+
+Inscpected the weakest class:Circle
+
+Timing varies a lot.
+Some samples have a short burst in the middle with flat signal around it (74vep09n, 751ud6u9).
+Others have the gesture late in the window (74vepuus). 
+A few have activity across the whole 3s (74vetvba, 74veqnas).
+Wand orientation varies. 
+The red axis sits near the top in some samples and near the bottom in others (751t15qb, 751t0obj).
+That means gravity is landing on different axes. 
+Your Flatten block uses average, min and max, which depend directly on orientation, so a differently held wand looks like a different gesture.
+Intensity varies.
+Some are gentle, and 74veqnas is a violent shake.
+A “circle” looks very different from one recording to the next.
+This is a diverse Circle class, and the model has only a few dozen examples to learn it from.
+A test set recorded on a different day or with a different grip will probably land outside what it has seen.
+
+## Magic Wand — Baseline Model
+
+**Purpose:** Recognize Circle, W, and Z gestures using an ESP32 and accelerometer.
+
+### Dataset
+- Training: 34 Circle, 30 W, 30 Z
+- Testing: 30 samples total
+- Note: Test samples were modified during debugging, so results are provisional.
+
+### Impulse
+- Window size: 3 seconds
+- DSP blocks: Spectral Analysis + Flatten
+- Classifier: Fully connected neural network
+- Hidden layers: 20 neurons, then 10 neurons
+- Output classes: Circle, W, Z
+- Training cycles: 100
+- Learning rate: 0.0005
+- Validation split: 20%
+- Batch size: 32
+- Int8 profiling: Enabled
+
+### Baseline results
+- Validation accuracy: approximately 94.7%
+- Validation loss: approximately 0.27
+- Test accuracy: 60%
+- F1 scores: Circle 0.56, W 0.75, Z 0.78
+- Estimated model size: approximately 15.5 KB
+- Estimated inference time: approximately 1 ms
+
+### Known issues
+- Circle and W are sometimes confused.
+- Some predictions are uncertain.
+- Test results are not an independent final benchmark.
+
+
+
+
