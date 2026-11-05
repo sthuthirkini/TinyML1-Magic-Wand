@@ -1,6 +1,6 @@
 # Final Model Report: Magic Wand Gesture Classifier (Circle, W, Z)
 
-Edge Impulse project "PLEASE GOD PLEASE" (ID 1141501) · Target: ESP32 + ADXL345
+Edge Impulse project "MW" (ID 1141501) · Target: ESP32 + ADXL345
 
 > **Status:** Results below are the last ones reported. It is **not confirmed** that the model was retrained after the final sample deletions. Items marked *(unconfirmed)* need checking in the project before this is treated as final.
 
